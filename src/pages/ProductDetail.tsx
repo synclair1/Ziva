@@ -8,8 +8,7 @@ import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowLeft, ChevronRight, Share2, ShoppingBag, Loader2 } from 'lucide-react';
 import { useCart } from '../context/CartContext.tsx';
-import { getSingleProduct } from '../services/productService.ts';
-import { Product } from '../lib/firebaseService.ts';
+import { SITE_CONFIG } from '../config.ts';
 
 export default function ProductDetail() {
   const { id } = useParams();
@@ -144,7 +143,7 @@ export default function ProductDetail() {
               </button>
               
               <a 
-                href={`https://wa.me/1234567890?text=${encodeURIComponent(`Hello ZIVA! I'd like to order the ${product.name} (${product.price}).`)}`}
+                href={`https://wa.me/${SITE_CONFIG.whatsappNumber}?text=${encodeURIComponent(`Hello ${SITE_CONFIG.name}! I'd like to order the ${product.name} (${product.price}).`)}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-full bg-green-600 text-white py-6 text-xs uppercase tracking-[0.2em] font-sans font-bold hover:bg-green-700 transition-colors flex items-center justify-center gap-3"

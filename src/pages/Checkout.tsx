@@ -8,7 +8,7 @@ import { useCart } from '../context/CartContext.tsx';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle, Truck, CreditCard, Landmark, ArrowLeft, Loader2 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
-import { createOrder } from '../lib/firebaseService.ts';
+import { SITE_CONFIG } from '../config.ts';
 
 export default function Checkout() {
   const { cart, totalPrice, clearCart } = useCart();
@@ -40,6 +40,25 @@ export default function Checkout() {
 
     setIsProcessing(true);
     try {
+      // Netlify Form Submission
+      const netlifyData = new URLSearchParams();
+      netlifyData.append("form-name", "orders");
+      netlifyData.append("customerName", `${formData.firstName} ${formData.lastName}`);
+      netlifyData.append("customerEmail", formData.email);
+      netlifyData.append("contact", formData.contact);
+      netlifyData.append("address", formData.address);
+      netlifyData.append("city", formData.city);
+      netlifyData.append("total", `Rs. ${totalPrice.toLocaleString()}`);
+      netlifyData.append("items", cart.map(i => `${i.name} (${i.size}) x${i.quantity}`).join(', '));
+      netlifyData.append("paymentMethod", paymentMethod === 'cod' ? 'Cash on Delivery' : (paymentMethod === 'bank' ? 'Bank Transfer' : 'WhatsApp Order'));
+      netlifyData.append("orderDate", new Date().toLocaleString());
+
+      await fetch("/", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: netlifyData.toString(),
+      });
+
       if (paymentMethod === 'whatsapp') {
         const message = `Hello ZIVA! I'd like to place an order via WhatsApp.
 
@@ -54,28 +73,9 @@ Address: ${formData.address}, ${formData.city}
 Contact: ${formData.contact}
 Email: ${formData.email}`;
 
-        window.open(`https://wa.me/1234567890?text=${encodeURIComponent(message)}`, '_blank');
+        window.open(`https://wa.me/${SITE_CONFIG.whatsappNumber}?text=${encodeURIComponent(message)}`, '_blank');
       }
 
-      const order = {
-        customerEmail: formData.email,
-        customerName: `${formData.firstName} ${formData.lastName}`,
-        address: formData.address,
-        city: formData.city,
-        contact: formData.contact,
-        items: cart.map(item => ({
-          id: item.id,
-          name: item.name,
-          price: item.price,
-          size: item.size,
-          quantity: item.quantity
-        })),
-        total: totalPrice,
-        paymentMethod: paymentMethod === 'cod' ? 'Cash on Delivery' : (paymentMethod === 'bank' ? 'Bank Transfer' : 'WhatsApp Order'),
-      };
-
-      await createOrder(order);
-      
       setIsProcessing(false);
       setStep(3);
       clearCart();

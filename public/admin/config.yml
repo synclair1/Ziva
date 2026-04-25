@@ -1,0 +1,23 @@
+backend:
+  name: git-gateway
+  branch: main # Ensure this matches your GitHub branch
+
+media_folder: "public/uploads"
+public_folder: "/uploads"
+
+collections:
+  - name: "products"
+    label: "Catalog (Products)"
+    folder: "src/content/products"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "Product Name", name: "name", widget: "string", hint: "e.g. Silk Kaftan" }
+      - { label: "Category", name: "category", widget: "select", options: ["2-Piece Set", "3-Piece Set", "Casual Fusion", "Ready-to-Wear"] }
+      - { label: "Short Price Text (for display)", name: "price", widget: "string", default: "Rs. 0", hint: "e.g. Rs. 15,000" }
+      - { label: "Price in Numbers (used for cart calculation)", name: "priceNumber", widget: "number", default: 0 }
+      - { label: "Main Image", name: "image", widget: "image" }
+      - { label: "Description", name: "description", widget: "text" }
+      - { label: "Features/Details (Add one per line)", name: "details", widget: "list" }
+      - { label: "Show on Homepage Gallery?", name: "featured", widget: "boolean", default: false }
+      - { label: "Label Tag (Optional)", name: "tag", widget: "string", required: false, hint: "e.g. NEW or BEST SELLER" }

@@ -7,6 +7,18 @@
   </head>
   <body>
     <div id="root"></div>
+    <!-- Hidden form for Netlify detection -->
+    <form name="orders" data-netlify="true" hidden>
+      <input type="text" name="customerName" />
+      <input type="email" name="customerEmail" />
+      <input type="text" name="contact" />
+      <input type="text" name="address" />
+      <input type="text" name="city" />
+      <input type="text" name="items" />
+      <input type="text" name="total" />
+      <input type="text" name="paymentMethod" />
+      <input type="text" name="orderDate" />
+    </form>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
