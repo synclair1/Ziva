@@ -88,7 +88,7 @@ export default function Hero() {
               <div className="text-2xl font-serif mb-3 text-primary">Noor Oversized 2-Piece</div>
               <div className="text-sm text-secondary font-sans mb-6 leading-relaxed">Block-printed Khaddar shirt with tailored cigarette pants.</div>
               <div className="flex justify-between items-center border-t border-border-subtle pt-5">
-                <span className="font-sans font-medium text-primary">PKR 8,500</span>
+                <span className="font-sans font-medium text-primary">Rs. 8,500</span>
                 <Link to="/shop" className="text-[10px] uppercase tracking-widest underline underline-offset-4 text-primary hover:text-accent transition-colors">View Details</Link>
               </div>
             </div>

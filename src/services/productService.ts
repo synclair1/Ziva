@@ -15,19 +15,24 @@ const getCMSProducts = (): Product[] => {
 };
 
 export async function getAllProducts(categoryFilter?: string): Promise<Product[]> {
-  // Always prefer CMS products for storefront
   const cmsProducts = getCMSProducts();
+  let firebaseProducts: Product[] = [];
   
-  if (cmsProducts.length > 0) {
-    if (categoryFilter) {
-      return cmsProducts.filter(p => p.category === categoryFilter);
-    }
-    return cmsProducts;
+  try {
+    firebaseProducts = await getProducts(categoryFilter);
+  } catch (err) {
+    console.error("Firebase fetch failed", err);
   }
   
-  // Fallback to Firebase if CMS is empty
-  const firebaseProducts = await getProducts(categoryFilter);
-  return firebaseProducts || [];
+  // Combine both sources
+  let all = [...cmsProducts, ...firebaseProducts];
+  
+  // Apply category filter to combined list if not already filtered by Firebase
+  if (categoryFilter) {
+    all = all.filter(p => p.category === categoryFilter);
+  }
+  
+  return all;
 }
 
 export async function getSingleProduct(id: string): Promise<Product | null> {
@@ -41,12 +46,15 @@ export async function getSingleProduct(id: string): Promise<Product | null> {
 
 export async function getHomeFeaturedProducts(): Promise<Product[]> {
   const cmsProducts = getCMSProducts();
-  const featured = cmsProducts.filter(p => p.featured);
+  const cmsFeatured = cmsProducts.filter(p => p.featured);
   
-  if (featured.length > 0) {
-    return featured.slice(0, 4);
+  let firebaseFeatured: Product[] = [];
+  try {
+    firebaseFeatured = await getFeaturedProducts();
+  } catch (err) {
+    console.error("Firebase featured fetch failed", err);
   }
-  
-  const firebaseProducts = await getFeaturedProducts();
-  return firebaseProducts || [];
+
+  const combined = [...cmsFeatured, ...firebaseFeatured];
+  return combined.slice(0, 8);
 }

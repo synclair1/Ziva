@@ -10,7 +10,8 @@ collections:
     label: "Catalog (Products)"
     folder: "src/content/products"
     create: true
-    slug: "{{slug}}"
+    slug: "{{year}}-{{month}}-{{day}}-{{name}}"
+    identifier_field: name
     fields:
       - { label: "Product Name", name: "name", widget: "string", hint: "e.g. Silk Kaftan" }
       - { label: "Category", name: "category", widget: "select", options: ["2-Piece Set", "3-Piece Set", "Casual Fusion", "Ready-to-Wear"] }

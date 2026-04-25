@@ -28,8 +28,9 @@ export default function Footer() {
             <h4 className="text-[11px] uppercase tracking-[0.3em] font-sans font-bold text-accent mb-10">Shop</h4>
             <ul className="space-y-5 text-[13px] font-sans font-medium text-secondary uppercase tracking-widest">
               <li><Link to="/shop" className="hover:text-primary transition-colors">Shop All</Link></li>
+              <li><Link to="/about" className="hover:text-primary transition-colors">About Us</Link></li>
+              <li><Link to="/account" className="hover:text-primary transition-colors">My Account</Link></li>
               <li><Link to="/contact" className="hover:text-primary transition-colors">Contact Us</Link></li>
-              <li><Link to="/" className="hover:text-primary transition-colors">Home</Link></li>
             </ul>
           </div>
         </div>
