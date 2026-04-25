@@ -15,6 +15,7 @@ import Checkout from './pages/Checkout.tsx';
 import Profile from './pages/Profile.tsx';
 import About from './pages/About.tsx';
 import Contact from './pages/Contact.tsx';
+import ManageProducts from './pages/ManageProducts.tsx';
 import { seedProductsIfEmpty } from './lib/firebaseService.ts';
 
 function ScrollToTop() {
@@ -38,6 +39,7 @@ export default function App() {
           <Route path="/product/:id" element={<ProductDetail />} />
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/account" element={<Profile />} />
+          <Route path="/admin-dashboard" element={<ManageProducts />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
         </Routes>

@@ -16,8 +16,8 @@ export interface CMSProduct {
   id?: string;
 }
 
-// Vite feature to import all files in a directory
-const productFiles = import.meta.glob('../content/products/*.json', { eager: true });
+// Use any for import.meta to avoid Vite-specific type issues in standard tsc
+const productFiles = (import.meta as any).glob('../content/products/*.json', { eager: true });
 
 export const getCMSProducts = (): CMSProduct[] => {
   return Object.entries(productFiles).map(([path, content]: [string, any]) => {

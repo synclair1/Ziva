@@ -115,16 +115,28 @@ export async function getProductById(id: string) {
 export async function addProduct(productData: Omit<Product, 'id'>) {
   try {
     const productsRef = collection(db, 'products');
-    return await addDoc(productsRef, productData);
+    return await addDoc(productsRef, {
+      ...productData,
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp()
+    });
   } catch (error) {
     handleFirestoreError(error, 'create', 'products');
+    return null;
   }
+}
+
+export async function createProduct(productData: any) {
+  return addProduct(productData);
 }
 
 export async function updateProduct(id: string, productData: Partial<Product>) {
   try {
     const docRef = doc(db, 'products', id);
-    await updateDoc(docRef, productData);
+    await updateDoc(docRef, {
+      ...productData,
+      updatedAt: serverTimestamp()
+    });
   } catch (error) {
     handleFirestoreError(error, 'update', `products/${id}`);
   }
@@ -134,8 +146,10 @@ export async function deleteProduct(id: string) {
   try {
     const docRef = doc(db, 'products', id);
     await deleteDoc(docRef);
+    return true;
   } catch (error) {
     handleFirestoreError(error, 'delete', `products/${id}`);
+    return false;
   }
 }
 

@@ -124,18 +124,16 @@ export default function Profile() {
 
               <div className="pt-6 mt-6 border-t border-secondary/5">
                 <p className="px-4 mb-4 text-[10px] uppercase tracking-[0.2em] text-secondary/40 font-bold font-sans">Management</p>
-                <a 
-                  href="/admin/"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <button 
+                  onClick={() => navigate('/admin-dashboard')}
                   className="w-full flex items-center justify-between p-4 bg-primary text-white rounded-xl font-sans font-bold text-xs uppercase tracking-widest shadow-lg shadow-primary/20 hover:scale-[1.02] transition-all"
                 >
                   <span className="flex items-center space-x-3">
                     <ShoppingBag size={16} />
-                    <span>Manage Products</span>
+                    <span>Manage Catalog</span>
                   </span>
                   <ChevronRight size={14} />
-                </a>
+                </button>
               </div>
             </nav>
           </div>
