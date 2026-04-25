@@ -17,7 +17,8 @@ import {
   updateDoc,
   orderBy
 } from 'firebase/firestore';
-import { db } from './firebase';
+import { db, handleFirestoreError } from './firebase';
+import { getCMSProducts, getCMSProductById } from './cmsService';
 
 export interface Product {
   id: string;
@@ -46,37 +47,59 @@ export interface Order {
   createdAt: any;
 }
 
-import { handleFirestoreError } from './firebase';
-
 export async function getProducts(categoryFilter?: string) {
   try {
+    // Get CMS products first
+    const cmsProducts = getCMSProducts() as Product[];
+    
+    // Get Firestore products
     const productsRef = collection(db, 'products');
     let q = query(productsRef);
-    
     if (categoryFilter) {
       q = query(productsRef, where('category', '==', categoryFilter));
     }
-    
     const querySnapshot = await getDocs(q);
-    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Product));
+    const firestoreProducts = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Product));
+
+    // Merge and filter
+    let allProducts = [...cmsProducts, ...firestoreProducts];
+    
+    if (categoryFilter) {
+      allProducts = allProducts.filter(p => p.category === categoryFilter);
+    }
+    
+    return allProducts;
   } catch (error) {
     handleFirestoreError(error, 'list', 'products');
+    return getCMSProducts() as Product[]; // Fallback to CMS if Firestore fails
   }
 }
 
 export async function getFeaturedProducts() {
   try {
+    // CMS Featured
+    const cmsFeatured = getCMSProducts().filter(p => p.featured) as Product[];
+    
+    // Firestore Featured
     const productsRef = collection(db, 'products');
-    const q = query(productsRef, where('featured', '==', true), limit(4));
+    const q = query(productsRef, where('featured', '==', true), limit(8));
     const querySnapshot = await getDocs(q);
-    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Product));
+    const firestoreFeatured = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Product));
+
+    return [...cmsFeatured, ...firestoreFeatured].slice(0, 8);
   } catch (error) {
     handleFirestoreError(error, 'list', 'products');
+    return getCMSProducts().filter(p => p.featured) as Product[]; 
   }
 }
 
 export async function getProductById(id: string) {
   try {
+    // Check CMS first
+    const cmsProduct = getCMSProductById(id);
+    if (cmsProduct) return cmsProduct as Product;
+
+    // Check Firestore
     const docRef = doc(db, 'products', id);
     const docSnap = await getDoc(docRef);
     if (docSnap.exists()) {
@@ -85,6 +108,7 @@ export async function getProductById(id: string) {
     return null;
   } catch (error) {
     handleFirestoreError(error, 'get', `products/${id}`);
+    return (getCMSProductById(id) as Product) || null;
   }
 }
 

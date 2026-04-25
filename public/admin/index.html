@@ -5,6 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ZIVA CMS | Content Management</title>
     <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+    <script>
+      // Configuration for Netlify Identity in the preview environment
+      const NETLIFY_SITE_URL = "https://zivaclothing.netlify.app";
+
+      if (window.netlifyIdentity) {
+        // Initialize with the production API server if we're on a preview domain
+        const isPreview = window.location.hostname.includes("run.app") || window.location.hostname.includes("localhost");
+        
+        if (isPreview) {
+          window.netlifyIdentity.init({
+            API_SERVER: `${NETLIFY_SITE_URL}/.netlify/identity`
+          });
+        }
+      }
+    </script>
   </head>
   <body>
     <!-- Include the script that builds the page and powers Decap CMS -->

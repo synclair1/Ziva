@@ -22,7 +22,19 @@
     </form>
     <script type="module" src="/src/main.tsx"></script>
     <script>
+      // Configuration for Netlify Identity in the preview environment
+      const NETLIFY_SITE_URL = "https://zivaclothing.netlify.app"; // Update this to your actual netlify domain
+
       if (window.netlifyIdentity) {
+        // Initialize with the production API server if we're on a preview domain
+        const isPreview = window.location.hostname.includes("run.app") || window.location.hostname.includes("localhost");
+        
+        if (isPreview) {
+          window.netlifyIdentity.init({
+            API_SERVER: `${NETLIFY_SITE_URL}/.netlify/identity`
+          });
+        }
+
         window.netlifyIdentity.on("init", (user) => {
           if (!user) {
             window.netlifyIdentity.on("login", () => {
@@ -32,12 +44,21 @@
         });
       }
 
-      // Automatically open the identity widget if a token is present in the URL (for invitations/confirmations)
+      // Automatically open the identity widget if a token is present in the URL
       window.addEventListener("load", () => {
-        if (window.location.hash.includes("invite_token") || 
-            window.location.hash.includes("confirmation_token") || 
-            window.location.hash.includes("recovery_token")) {
+        const hash = window.location.hash;
+        if (hash.includes("invite_token") || 
+            hash.includes("confirmation_token") || 
+            hash.includes("recovery_token")) {
+          
           if (window.netlifyIdentity) {
+            // Re-initialize for tokens to ensure they hit the right backend
+            const isPreview = window.location.hostname.includes("run.app") || window.location.hostname.includes("localhost");
+            if (isPreview) {
+              window.netlifyIdentity.init({
+                API_SERVER: `${NETLIFY_SITE_URL}/.netlify/identity`
+              });
+            }
             window.netlifyIdentity.open();
           }
         }
