@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Ziva</title>
+    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
   </head>
   <body>
     <div id="root"></div>
@@ -20,6 +21,28 @@
       <input type="text" name="orderDate" />
     </form>
     <script type="module" src="/src/main.tsx"></script>
+    <script>
+      if (window.netlifyIdentity) {
+        window.netlifyIdentity.on("init", (user) => {
+          if (!user) {
+            window.netlifyIdentity.on("login", () => {
+              document.location.href = "/admin/";
+            });
+          }
+        });
+      }
+
+      // Automatically open the identity widget if a token is present in the URL (for invitations/confirmations)
+      window.addEventListener("load", () => {
+        if (window.location.hash.includes("invite_token") || 
+            window.location.hash.includes("confirmation_token") || 
+            window.location.hash.includes("recovery_token")) {
+          if (window.netlifyIdentity) {
+            window.netlifyIdentity.open();
+          }
+        }
+      });
+    </script>
   </body>
 </html>
 

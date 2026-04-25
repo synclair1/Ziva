@@ -8,6 +8,8 @@ import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowLeft, ChevronRight, Share2, ShoppingBag, Loader2 } from 'lucide-react';
 import { useCart } from '../context/CartContext.tsx';
+import { getSingleProduct } from '../services/productService.ts';
+import { Product } from '../lib/firebaseService.ts';
 import { SITE_CONFIG } from '../config.ts';
 
 export default function ProductDetail() {
@@ -168,7 +170,7 @@ export default function ProductDetail() {
                 </ul>
               </div>
               <div className="flex justify-between items-center text-[10px] uppercase tracking-[0.2em] text-muted font-sans font-medium">
-                <span>SKU: {product.sku}</span>
+                <span>SKU: {product.id}</span>
                 <button className="flex items-center space-x-2 hover:text-primary transition-colors">
                   <Share2 size={12} />
                   <span>Share</span>

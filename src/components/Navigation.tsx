@@ -4,14 +4,16 @@
  */
 
 import React, { useState } from 'react';
-import { ShoppingBag, Search, Menu, X, Instagram, Facebook, Twitter } from 'lucide-react';
+import { ShoppingBag, Search, Menu, X, Instagram, Facebook, Twitter, User } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, NavLink } from 'react-router-dom';
 import { useCart } from '../context/CartContext.tsx';
+import { useAuth } from '../context/AuthContext.tsx';
 
 export default function Navigation() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { setIsCartOpen, totalItems } = useCart();
+  const { user } = useAuth();
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-bg-light/80 backdrop-blur-md border-b border-border-subtle">
@@ -46,6 +48,16 @@ export default function Navigation() {
               Shop
             </NavLink>
             <NavLink
+              to="/about"
+              className={({ isActive }) =>
+                `text-[11px] uppercase tracking-relaxed-caps font-sans font-medium transition-opacity ${
+                  isActive ? 'border-b border-primary pb-1 text-primary' : 'text-primary hover:opacity-60'
+                }`
+              }
+            >
+              About
+            </NavLink>
+            <NavLink
               to="/contact"
               className={({ isActive }) =>
                 `text-[11px] uppercase tracking-relaxed-caps font-sans font-medium transition-opacity ${
@@ -54,6 +66,16 @@ export default function Navigation() {
               }
             >
               Contact
+            </NavLink>
+            <NavLink
+              to="/account"
+              className={({ isActive }) =>
+                `text-[11px] uppercase tracking-relaxed-caps font-sans font-medium transition-opacity ${
+                  isActive ? 'border-b border-primary pb-1 text-primary' : 'text-primary hover:opacity-60'
+                }`
+              }
+            >
+              {user ? 'Account' : 'Login'}
             </NavLink>
           </div>
 
@@ -95,11 +117,25 @@ export default function Navigation() {
                 Shop
               </Link>
               <Link
+                to="/about"
+                onClick={() => setIsMenuOpen(false)}
+                className="block text-sm uppercase tracking-widest font-sans font-medium py-2 text-primary"
+              >
+                About
+              </Link>
+              <Link
                 to="/contact"
                 onClick={() => setIsMenuOpen(false)}
                 className="block text-sm uppercase tracking-widest font-sans font-medium py-2 text-primary"
               >
                 Contact
+              </Link>
+              <Link
+                to="/account"
+                onClick={() => setIsMenuOpen(false)}
+                className="block text-sm uppercase tracking-widest font-sans font-medium py-2 text-primary"
+              >
+                {user ? 'My Account' : 'Sign In'}
               </Link>
             </div>
           </motion.div>

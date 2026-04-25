@@ -1,7 +1,7 @@
 import { getProducts, getProductById, getFeaturedProducts, Product } from '../lib/firebaseService';
 
 // This will load all local JSON files created by the CMS
-const productFiles = import.meta.glob('../content/products/*.json', { eager: true });
+const productFiles = (import.meta as any).glob('../content/products/*.json', { eager: true });
 
 const getCMSProducts = (): Product[] => {
   return Object.entries(productFiles).map(([path, content]: [string, any]) => {

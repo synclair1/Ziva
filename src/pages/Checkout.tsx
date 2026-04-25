@@ -3,19 +3,23 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useCart } from '../context/CartContext.tsx';
+import { useAuth } from '../context/AuthContext.tsx';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle, Truck, CreditCard, Landmark, ArrowLeft, Loader2 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { SITE_CONFIG } from '../config.ts';
+import { createOrder } from '../lib/firebaseService.ts';
 
 export default function Checkout() {
   const { cart, totalPrice, clearCart } = useCart();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [paymentMethod, setPaymentMethod] = useState<'cod' | 'bank' | 'whatsapp'>('cod');
   const [isProcessing, setIsProcessing] = useState(false);
+  const [orderId, setOrderId] = useState('');
 
   // Form State
   const [formData, setFormData] = useState({
@@ -26,6 +30,17 @@ export default function Checkout() {
     city: '',
     contact: '',
   });
+
+  useEffect(() => {
+    if (user) {
+      setFormData(prev => ({
+        ...prev,
+        email: user.email || '',
+        firstName: user.displayName?.split(' ')[0] || '',
+        lastName: user.displayName?.split(' ').slice(1).join(' ') || '',
+      }));
+    }
+  }, [user]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -58,6 +73,32 @@ export default function Checkout() {
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: netlifyData.toString(),
       });
+
+      // Firebase Firestore Submission (for order history)
+      const orderData = {
+        customerEmail: formData.email,
+        customerName: `${formData.firstName} ${formData.lastName}`,
+        userId: user?.uid || null,
+        address: formData.address,
+        city: formData.city,
+        contact: formData.contact,
+        items: cart.map(item => ({
+          id: item.id,
+          name: item.name,
+          price: item.price,
+          priceNumber: item.priceNumber,
+          size: item.size,
+          quantity: item.quantity,
+          image: item.image
+        })),
+        total: `Rs. ${totalPrice.toLocaleString()}`,
+        totalNumber: totalPrice,
+        paymentMethod: paymentMethod === 'cod' ? 'Cash on Delivery' : (paymentMethod === 'bank' ? 'Bank Transfer' : 'WhatsApp Order'),
+        orderDate: new Date().toLocaleString()
+      };
+
+      const docRef = await createOrder(orderData);
+      if (docRef) setOrderId(docRef.id);
 
       if (paymentMethod === 'whatsapp') {
         const message = `Hello ZIVA! I'd like to place an order via WhatsApp.
@@ -292,12 +333,17 @@ Email: ${formData.email}`;
                     <p className="text-secondary font-sans font-light max-w-sm mx-auto">
                       Thank you for your purchase. We've received your order and will start processing it shortly.
                     </p>
-                    <p className="text-sm font-sans font-bold uppercase tracking-widest pt-4">Order ID: #ZIVA-10294</p>
+                    <p className="text-sm font-sans font-bold uppercase tracking-widest pt-4">Order ID: #{orderId.slice(-8).toUpperCase() || 'ZIVA-10294'}</p>
                   </div>
-                  <div className="pt-8">
-                    <Link to="/" className="inline-block px-12 py-5 bg-primary text-white text-xs uppercase tracking-widest font-sans font-bold hover:opacity-90">
+                  <div className="pt-8 flex flex-col sm:flex-row justify-center gap-4">
+                    <Link to="/" className="px-12 py-5 bg-primary text-white text-xs uppercase tracking-widest font-sans font-bold hover:opacity-90">
                       Go to Home
                     </Link>
+                    {user && (
+                      <Link to="/account" className="px-12 py-5 border border-primary text-primary text-xs uppercase tracking-widest font-sans font-bold hover:bg-primary/5">
+                        View Order History
+                      </Link>
+                    )}
                   </div>
                 </motion.div>
               )}

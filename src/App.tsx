@@ -12,6 +12,9 @@ import ProductList from './pages/ProductList.tsx';
 import ProductDetail from './pages/ProductDetail.tsx';
 import CartDrawer from './components/CartDrawer.tsx';
 import Checkout from './pages/Checkout.tsx';
+import Profile from './pages/Profile.tsx';
+import About from './pages/About.tsx';
+import Contact from './pages/Contact.tsx';
 import { seedProductsIfEmpty } from './lib/firebaseService.ts';
 
 function ScrollToTop() {
@@ -34,7 +37,9 @@ export default function App() {
           <Route path="/shop" element={<ProductList />} />
           <Route path="/product/:id" element={<ProductDetail />} />
           <Route path="/checkout" element={<Checkout />} />
-          <Route path="/about" element={<Home />} /> {/* Reuse home for now as a placeholder */}
+          <Route path="/account" element={<Profile />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
         </Routes>
         <Footer />
       </div>
